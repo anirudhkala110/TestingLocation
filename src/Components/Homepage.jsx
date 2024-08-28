@@ -8,51 +8,54 @@ import Profile from './DeliveryBoy/Profile.jsx';
 import OwnerProfile from './Owner/Profile.jsx';
 import axios from 'axios'
 
+axios.defaults.withCredentials = true
+
 function HomePage() {
-    const { gpsEnabled } = useGps();
-    const [location, setLocation] = useState({ lat: null, longi: null });
-    const [signUp, setSignUp] = useState(false)
+    const { gpsEnabled, lat, longi } = useGps();
+    console.log(lat, longi)
     const [msg, setMsg] = useState(null)
-
     useEffect(() => {
+        let interval;
         if (gpsEnabled) {
-            const interval = setInterval(() => {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        setLocation({
-                            lat: position.coords.latitude,
-                            longi: position.coords.longitude
-                        });
-                        axios.post('https://dashboard.basic2ai.info/api/location', {
-                            lat: position.coords.latitude,
-                            longi: position.coords.longitude
-                        })
-                            .then(res => {
-                                setMsg(res.data.msg)
-                            })
-                            .catch(err => {
-                                console.log(err)
-                            })
-                        axios.post('http://localhost:5001/api/location', {
-                            lat: position.coords.latitude,
-                            longi: position.coords.longitude
-                        })
-                            .then(res => {
-                                setMsg(res.data.msg)
-                            })
-                            .catch(err => {
-                                console.log(err)
-                            })
-                    },
-                    (error) => {
-                        console.error('Error retrieving GPS:', error);
-                    }
-                );
-            }, 30000);
+            interval = setInterval(() => {
+                axios.post('https://dashboard.basic2ai.info/api/location', {
+                    lat: lat,
+                    longi: longi
+                })
+                    .then(res => {
+                        setMsg(res.data.msg);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
 
-            return () => clearInterval(interval);
+                axios.post('http://localhost:5001/api/location', {
+                    lat: lat,
+                    longi: longi
+                })
+                    .then(res => {
+                        setMsg(res.data.msg);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+
+                axios.get('https://dashboard.basic2ai.info/location/get')
+                    .then(res => {
+                        console.log(res.data);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+            }, 30000);
         }
+
+        return () => {
+            setMsg(null)
+            clearInterval(interval)
+        };
     }, [gpsEnabled]);
+
 
     return (
         <div className="container-fluid" style={{ minWidth: '370px', width: '100%' }}>
@@ -70,10 +73,10 @@ function HomePage() {
                                         <div className='px-3'>
                                             <h6 className="card-subtitle mb-2 text-muted">GPS Enabled</h6>
                                             <p className="card-text">
-                                                <strong>Latitude:</strong> {location.lat ? location.lat.toFixed(6) : 'Fetching...'}
+                                                <strong>Latitude:</strong> {lat ? lat : 'Fetching...'}
                                             </p>
                                             <p className="card-text">
-                                                <strong>Longitude:</strong> {location.longi ? location.longi.toFixed(6) : 'Fetching...'}
+                                                <strong>Longitude:</strong> {longi ? longi : 'Fetching...'}
                                             </p>
                                         </div>
                                     </div>

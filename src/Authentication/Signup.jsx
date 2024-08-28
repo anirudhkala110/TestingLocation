@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function SignUp() {
+    const [registrationData, setRegistrationData] = useState({
+        name: null,
+        phone: null,
+        email: null,
+        vehicleNumber: null,
+        password: null,
+        cpassword: null
+    })
     return (
         <div className="container mt-5">
             <div className="d-flex justify-content-center">
@@ -28,8 +36,16 @@ function SignUp() {
                                     <label htmlFor="signupPassword">Password</label>
                                 </div>
                                 <div className="form-floating mb-3">
-                                    <input type="number" className="form-control" id="phone" placeholder="Phone Bumber" required />
+                                    <input type="password" className="form-control" id="signupConfirmPassword" placeholder="Confirm Password" required />
+                                    <label htmlFor="signupConfirmPassword">Confirm Password</label>
+                                </div>
+                                <div className="form-floating mb-3">
+                                    <input type="number" className="form-control" id="phone" placeholder="Phone Number" required />
                                     <label htmlFor="phone">Phone Number</label>
+                                </div>
+                                <div className="form-floating mb-3">
+                                    <input type="text" className="form-control" id="vehicleNumber" placeholder="Vehicle Number" required />
+                                    <label htmlFor="VehicleNumber">Vehicle Number</label>
                                 </div>
                             </form>
                             <button type="submit" className="btn rounded-0 btn-primary w-100">Sign Up</button>
